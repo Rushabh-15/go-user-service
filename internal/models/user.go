@@ -3,11 +3,15 @@ package models
 // DateLayout is the canonical wire format for dob in requests and responses.
 const DateLayout = "2006-01-02"
 
-// CreateUserRequest is the body for POST /users (and reused by PUT on Day 3).
+// CreateUserRequest is the body for POST /users.
 type CreateUserRequest struct {
 	Name string `json:"name" validate:"required"`
 	Dob  string `json:"dob" validate:"required,datetime=2006-01-02"`
 }
+
+// UpdateUserRequest is the body for PUT /users/:id. It currently accepts the
+// same fields as create, so it is an alias; split it if the shapes diverge.
+type UpdateUserRequest = CreateUserRequest
 
 // UserResponse is returned by create/update. It deliberately omits age,
 // matching the task spec.

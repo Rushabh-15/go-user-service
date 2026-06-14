@@ -12,11 +12,10 @@ func Register(app *fiber.App, h *handler.UserHandler) {
 
 	users := app.Group("/users")
 	users.Post("/", h.CreateUser)
+	users.Get("/", h.ListUsers)
 	users.Get("/:id", h.GetUser)
-	// Day 3 will add:
-	//   users.Put("/:id", h.UpdateUser)
-	//   users.Delete("/:id", h.DeleteUser)
-	//   users.Get("/", h.ListUsers)
+	users.Put("/:id", h.UpdateUser)
+	users.Delete("/:id", h.DeleteUser)
 }
 
 func healthCheck(c *fiber.Ctx) error {
