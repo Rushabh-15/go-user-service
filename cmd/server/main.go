@@ -13,7 +13,13 @@ import (
 	"go.uber.org/zap"
 
 	"ainyx-user-api/config"
+	"ainyx-user-api/db/sqlc"
+	"ainyx-user-api/internal/handler"
 	"ainyx-user-api/internal/logger"
+	"ainyx-user-api/internal/middleware"
+	"ainyx-user-api/internal/repository"
+	"ainyx-user-api/internal/routes"
+	"ainyx-user-api/internal/service"
 )
 
 func main() {
@@ -32,8 +38,7 @@ func main() {
 	}
 	defer func() { _ = log.Sync() }()
 
-	// Connection pool: safe for concurrent use across requests,
-	// unlike a single connection.
+	// Connection pool: safe for concurrent use across requests.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -49,11 +54,19 @@ func main() {
 	}
 	log.Info("connected to database")
 
+	// Wire the layers: sqlc queries -> repository -> service -> handler.
+	queries := sqlc.New(pool)
+	userRepo := repository.New(queries)
+	userSvc := service.New(userRepo, log)
+	userHandler := handler.NewUserHandler(userSvc, log)
+
 	app := fiber.New()
 
-	app.Get("/health", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{"status": "ok"})
-	})
+	// Order matters: RequestID runs first so the logger can read the id.
+	app.Use(middleware.RequestID())
+	app.Use(middleware.RequestLogger(log))
+
+	routes.Register(app, userHandler)
 
 	// Run the server in a goroutine so main can block on shutdown signals.
 	go func() {
