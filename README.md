@@ -35,7 +35,7 @@ Bonus features (all included):
 ## Prerequisites
 
 - **Docker** and **Docker Compose** for the quick start, **or**
-- **Go 1.22+** and a local **PostgreSQL** for local development
+- **Go 1.26+** and a local **PostgreSQL** for local development
 
 ## Quick start (Docker)
 

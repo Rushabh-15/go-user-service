@@ -160,7 +160,7 @@ func parsePagination(c *fiber.Ctx) (limit, offset int32, err error) {
 	offset = 0
 
 	if v := c.Query("limit"); v != "" {
-		n, perr := strconv.Atoi(v)
+		n, perr := strconv.ParseInt(v, 10, 32)
 		if perr != nil || n < 1 {
 			return 0, 0, errors.New("limit must be a positive integer")
 		}
@@ -171,7 +171,7 @@ func parsePagination(c *fiber.Ctx) (limit, offset int32, err error) {
 	}
 
 	if v := c.Query("offset"); v != "" {
-		n, perr := strconv.Atoi(v)
+		n, perr := strconv.ParseInt(v, 10, 32)
 		if perr != nil || n < 0 {
 			return 0, 0, errors.New("offset must be a non-negative integer")
 		}
