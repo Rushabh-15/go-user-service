@@ -16,5 +16,37 @@ services:
       timeout: 5s
       retries: 5
 
+  # One-shot container: applies migrations, then exits.
+  migrate:
+    image: migrate/migrate
+    container_name: ainyx_migrate
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./db/migrations:/migrations
+    command: ["-path", "/migrations", "-database", "postgres://postgres:postgres@postgres:5432/usersdb?sslmode=disable", "up"]
+
+  app:
+    build: .
+    container_name: ainyx_app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      # Note: host is "postgres" (the service name), not localhost.
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/usersdb?sslmode=disable
+      PORT: "8080"
+      APP_ENV: production
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 volumes:
   pgdata:
