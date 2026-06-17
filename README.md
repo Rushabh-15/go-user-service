@@ -43,7 +43,7 @@ The simplest way to run everything — database, migrations, and API — with on
 command:
 
 ```bash
-git clone <your-repo-url>
+git clone https://github.com/Rushabh-15/ainyx-user-api
 cd ainyx-user-api
 docker compose up --build
 ```
