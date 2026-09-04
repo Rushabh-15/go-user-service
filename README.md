@@ -1,4 +1,4 @@
-# go-user-service
+# Go User Service — Production-Style REST API
 
 A small RESTful API in Go for managing users with a `name` and `dob` (date of
 birth). The API stores the date of birth and returns each user's **age,
